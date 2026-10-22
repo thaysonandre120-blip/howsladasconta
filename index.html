@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoClima Itajaí-Açu | Observatório Ambiental e Climático</title>
+  <meta name="description" content="Plataforma ambiental de monitoramento climático, bacia do Rio Itajaí-Açu, impacto do El Niño e conservação da biodiversidade costeira em Itajaí e Navegantes.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z'/></svg>">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <aside class="announcement-bar" id="announcement-bar" role="complementary" aria-label="Alerta meteorológico">
+    <div class="container announcement-inner">
+      <div class="announcement-content">
+        <span class="pulse-beacon" aria-hidden="true"></span>
+        <strong class="announcement-badge">MONITORAMENTO HIDROLÓGICO ATIVO</strong>
+        <span class="announcement-text">Bacia do Rio Itajaí-Açu em situação de <strong>Atenção Ordinária (Nível Normal: 1.42m)</strong>. Sem risco iminente de extravasamento no estuário.</span>
+      </div>
+      <div class="announcement-actions">
+        <a href="#monitoramento" class="announcement-link">Ver telemetria ao vivo &rarr;</a>
+        <button type="button" class="announcement-close" id="btn-close-announcement" aria-label="Fechar aviso">&times;</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sticky Glassmorphism Header / Navigation -->
+  <header class="site-header" id="header">
+    <div class="container header-inner">
+      <a href="#hero" class="brand-logo" aria-label="EcoClima Itajaí-Açu - Início">
+        <div class="brand-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M16 2C8.268 2 2 8.268 2 16c0 6.13 3.91 11.36 9.38 13.26C11.13 28.5 11 27.77 11 27c0-4.42 3.58-8 8-8 2.21 0 4.21.9 5.66 2.34C28.18 19.34 30 15.86 30 16c0-7.732-6.268-14-14-14z" fill="url(#brand-grad-1)"/>
+            <path d="M26.5 18c-1.5 0-2.8.8-3.5 2-.7-1.2-2-2-3.5-2s-2.8.8-3.5 2c-.7-1.2-2-2-3.5-2-2.2 0-4 1.8-4 4 0 3.3 5 7 11 9 6-2 11-5.7 11-9 0-2.2-1.8-4-4-4z" fill="url(#brand-grad-2)"/>
+            <defs>
+              <linearGradient id="brand-grad-1" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#10b981"/>
+                <stop offset="1" stop-color="#047857"/>
+              </linearGradient>
+              <linearGradient id="brand-grad-2" x1="8" y1="18" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#06b6d4"/>
+                <stop offset="1" stop-color="#0284c7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">EcoClima</span>
+          <span class="brand-subtitle">Itajaí & Navegantes</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="main-nav" id="main-nav" aria-label="Navegação principal">
+        <ul class="nav-list">
+          <li><a href="#monitoramento" class="nav-link">Painel ao Vivo</a></li>
+          <li><a href="#el-nino" class="nav-link">O El Niño</a></li>
+          <li><a href="#bacia-hidrografica" class="nav-link">Bacia & Marés</a></li>
+          <li><a href="#biodiversidade" class="nav-link">Mata Atlântica</a></li>
+          <li><a href="#prevencao" class="nav-link">Prevenção</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" id="btn-theme-toggle" aria-label="Alternar modo visual">
+          <span class="theme-icon light-icon" aria-hidden="true">☀️</span>
+          <span class="theme-icon dark-icon" aria-hidden="true">🌙</span>
+        </button>
+
+        <!-- CTA Button -->
+        <a href="#alertas" class="btn btn-primary btn-sm btn-glow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          Alertas SMS/WhatsApp
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button type="button" class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Abrir menu de navegação" aria-expanded="false" aria-controls="main-nav">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero" aria-labelledby="hero-title">
+      <div class="hero-backdrop" aria-hidden="true">
+        <img src="assets/images/hero_itajai.jpg" alt="Foz do Rio Itajaí-Açu e encontro com o Oceano Atlântico em Itajaí e Navegantes" class="hero-bg-img" fetchpriority="high">
+        <div class="hero-overlay"></div>
+      </div>
+
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="badge-pill">
+            <span class="badge-dot"></span>
+            <span>Observatório Ecológico e Hidrometeorológico</span>
+          </div>
+
+          <h1 id="hero-title" class="hero-title">
+            Ciência, Natureza e Resiliência Climática em <span class="gradient-text">Itajaí & Navegantes</span>
+          </h1>
+
+          <p class="hero-description">
+            Monitore a dinâmica do <strong>Rio Itajaí-Açu</strong>, compreenda as oscilações do fenômeno <strong>El Niño</strong> no Sul do Brasil e una-se às ações de preservação da nossa rica biodiversidade costeira.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="#monitoramento" class="btn btn-primary btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Acessar Telemetria em Tempo Real
+            </a>
+            <a href="#el-nino" class="btn btn-secondary btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Entenda o Fenômeno El Niño
+            </a>
+          </div>
+
+          <!-- Quick Telemetry Bar Floating -->
+          <div class="hero-stats-grid" id="quick-stats">
+            <div class="stat-card glass-panel">
+              <div class="stat-header">
+                <span class="stat-icon-wrapper hydro-icon">🌊</span>
+                <span class="stat-label">Rio Itajaí-Açu (Foz)</span>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="val-rio-nivel">1.42 <span class="stat-unit">m</span></div>
+                <div class="stat-status status-good">
+                  <span class="status-indicator"></span> Normal (Cota seg. 5.3m)
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-header">
+                <span class="stat-icon-wrapper ocean-icon">🌡️</span>
+                <span class="stat-label">Índice El Niño (ONI)</span>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="val-oni">+1.3 <span class="stat-unit">°C</span></div>
+                <div class="stat-status status-warning">
+                  <span class="status-indicator"></span> Aquecimento Moderado
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-header">
+                <span class="stat-icon-wrapper tide-icon">⚓</span>
+                <span class="stat-label">Maré Portuária</span>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="val-mare">0.85 <span class="stat-unit">m</span></div>
+                <div class="stat-status status-good">
+                  <span class="status-indicator"></span> Preia-mar às 18:20
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card glass-panel">
+              <div class="stat-header">
+                <span class="stat-icon-wrapper rain-icon">🌧️</span>
+                <span class="stat-label">Precipitação Acum. 24h</span>
+              </div>
+              <div class="stat-body">
+                <div class="stat-value" id="val-chuva">14.2 <span class="stat-unit">mm</span></div>
+                <div class="stat-status status-good">
+                  <span class="status-indicator"></span> Chuva fraca isolada
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE MONITORING DASHBOARD -->
+    <section class="section section-monitor" id="monitoramento" aria-labelledby="monitor-title">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="badge-pill center-badge">
+            <span class="badge-dot"></span>
+            <span>Painel Ambiental Interativo</span>
+          </div>
+          <h2 id="monitor-title" class="section-title">Observatório Hidrológico e Marítimo</h2>
+          <p class="section-subtitle">
+            Dados e projeções integrados para monitorar a vazão do rio, o regime de chuvas e a influência da maré astronômica e meteorológica.
+          </p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="tabs-nav-wrapper">
+          <div class="tabs-nav" role="tablist" aria-label="Selecione o conjunto de dados">
+            <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-visao-geral" id="tab-btn-geral" data-target="tab-visao-geral">
+              Visão Integrada
+            </button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-barragens" id="tab-btn-barragens" data-target="tab-barragens">
+              Barragens do Alto Vale
+            </button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-praias" id="tab-btn-praias" data-target="tab-praias">
+              Balneabilidade & Praias
+            </button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-simulador" id="tab-btn-simulador" data-target="tab-simulador">
+              Simulador de Cota do Rio
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Visão Integrada -->
+        <div class="tab-pane active" id="tab-visao-geral" role="tabpanel" aria-labelledby="tab-btn-geral">
+          <div class="dashboard-grid">
+            
+            <!-- Hydro Gauge Card -->
+            <article class="dash-card glass-card">
+              <div class="dash-card-header">
+                <div>
+                  <h3 class="dash-card-title">Nível do Rio Itajaí-Açu na Foz</h3>
+                  <span class="dash-card-sub">Estação Telemétrica Ferry-Boat / Barra</span>
+                </div>
+                <span class="badge-status badge-normal" id="badge-rio">Normal</span>
+              </div>
+
+              <div class="gauge-display">
+                <div class="gauge-visual">
+                  <div class="water-column-container">
+                    <div class="water-column" id="water-column-fill" style="height: 28%;">
+                      <div class="water-wave"></div>
+                      <div class="water-wave wave-back"></div>
+                    </div>
+                    <div class="marker marker-emergencia" style="bottom: 85%;">
+                      <span>Emergência (5.5m)</span>
+                    </div>
+                    <div class="marker marker-alerta" style="bottom: 65%;">
+                      <span>Alerta (4.5m)</span>
+                    </div>
+                    <div class="marker marker-atencao" style="bottom: 45%;">
+                      <span>Atenção (3.0m)</span>
+                    </div>
+                    <div class="marker marker-normal" style="bottom: 25%;">
+                      <span>Seguro (&lt;2.0m)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gauge-info">
+                  <div class="reading-big">
+                    <span id="gauge-level-value">1.42</span>
+                    <span class="reading-unit">metros</span>
+                  </div>
+                  <p class="gauge-desc">
+                    Medição das <strong>15:45</strong>. A vazão atual na foz encontra-se em regime de escoamento regular com maré vazante facilitando a drenagem para o oceano.
+                  </p>
+                  <ul class="telemetry-specs">
+                    <li><span>Velocidade da Corrente:</span> <strong>1.8 nós (escoando)</strong></li>
+                    <li><span>Turbidez da Água:</span> <strong>24 NTU (moderada)</strong></li>
+                    <li><span>Temperatura da Água:</span> <strong>22.4 °C</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <!-- Tides and Coastal Influence Card -->
+            <article class="dash-card glass-card">
+              <div class="dash-card-header">
+                <div>
+                  <h3 class="dash-card-title">Tábua de Marés e Condição do Mar</h3>
+                  <span class="dash-card-sub">Canal de Acesso aos Portos de Itajaí & Navegantes</span>
+                </div>
+                <span class="badge-status badge-info">Maré Vazante</span>
+              </div>
+
+              <div class="tide-schedule">
+                <div class="tide-item">
+                  <div class="tide-time">05:42</div>
+                  <div class="tide-type">Baixa-mar</div>
+                  <div class="tide-height">0.31 m</div>
+                </div>
+                <div class="tide-item active-tide">
+                  <div class="tide-time">11:58</div>
+                  <div class="tide-type">Preia-mar</div>
+                  <div class="tide-height">1.12 m</div>
+                </div>
+                <div class="tide-item">
+                  <div class="tide-time">17:40</div>
+                  <div class="tide-type">Baixa-mar</div>
+                  <div class="tide-height">0.40 m</div>
+                </div>
+                <div class="tide-item">
+                  <div class="tide-time">23:55</div>
+                  <div class="tide-type">Preia-mar</div>
+                  <div class="tide-height">0.98 m</div>
+                </div>
+              </div>
+
+              <div class="coastal-alert-box">
+                <div class="coastal-alert-icon">🌊</div>
+                <div class="coastal-alert-text">
+                  <strong>Influência de Maré de Tempestade (Maré Meteorológica):</strong>
+                  <p>Ventos do quadrante leste-nordeste moderados. Ausência de empilhamento hídrico costeiro significativo nas próximas 48 horas.</p>
+                </div>
+              </div>
+
+              <!-- Interactive Live Refresh Button -->
+              <div class="dash-footer">
+                <span class="update-timestamp" id="last-update-time">Última atualização: há 3 minutos</span>
+                <button type="button" class="btn btn-outline btn-xs" id="btn-refresh-telemetry">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  Simular Atualização
+                </button>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- Tab 2: Barragens do Alto Vale -->
+        <div class="tab-pane" id="tab-barragens" role="tabpanel" aria-labelledby="tab-btn-barragens">
+          <div class="barragens-grid">
+            <article class="barragem-card glass-card">
+              <div class="barragem-header">
+                <div>
+                  <h3 class="barragem-name">Barragem Oeste (Taió)</h3>
+                  <span class="barragem-loc">Rio das Pombas / Alto Vale</span>
+                </div>
+                <span class="barragem-comp">7 Comportas</span>
+              </div>
+              <div class="progress-section">
+                <div class="progress-labels">
+                  <span>Capacidade do Reservatório</span>
+                  <strong>32% (Livre)</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill progress-safe" style="width: 32%;"></div>
+                </div>
+              </div>
+              <div class="barragem-details">
+                <div><span>Comportas Abertas:</span> <strong>7</strong></div>
+                <div><span>Comportas Fechadas:</span> <strong>0</strong></div>
+                <div><span>Volume Retido:</span> <strong>26,5 milhões m³</strong></div>
+              </div>
+            </article>
+
+            <article class="barragem-card glass-card">
+              <div class="barragem-header">
+                <div>
+                  <h3 class="barragem-name">Barragem Sul (Ituporanga)</h3>
+                  <span class="barragem-loc">Rio Itajaí do Sul</span>
+                </div>
+                <span class="barragem-comp">5 Comportas</span>
+              </div>
+              <div class="progress-section">
+                <div class="progress-labels">
+                  <span>Capacidade do Reservatório</span>
+                  <strong>28% (Livre)</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill progress-safe" style="width: 28%;"></div>
+                </div>
+              </div>
+              <div class="barragem-details">
+                <div><span>Comportas Abertas:</span> <strong>5</strong></div>
+                <div><span>Comportas Fechadas:</span> <strong>0</strong></div>
+                <div><span>Volume Retido:</span> <strong>24,1 milhões m³</strong></div>
+              </div>
+            </article>
+
+            <article class="barragem-card glass-card">
+              <div class="barragem-header">
+                <div>
+                  <h3 class="barragem-name">Barragem Norte (José Boiteux)</h3>
+                  <span class="barragem-loc">Rio Hercílio / Maior do Estado</span>
+                </div>
+                <span class="barragem-comp">2 Comportas</span>
+              </div>
+              <div class="progress-section">
+                <div class="progress-labels">
+                  <span>Capacidade do Reservatório</span>
+                  <strong>19% (Livre)</strong>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill progress-safe" style="width: 19%;"></div>
+                </div>
+              </div>
+              <div class="barragem-details">
+                <div><span>Comportas Abertas:</span> <strong>2</strong></div>
+                <div><span>Comportas Fechadas:</span> <strong>0</strong></div>
+                <div><span>Volume Retido:</span> <strong>68,0 milhões m³</strong></div>
+              </div>
+            </article>
+          </div>
+          <p class="section-note text-center">
+            * Informações sincronizadas com a Defesa Civil de Santa Catarina. O controle de cheias no Alto Vale protege diretamente os municípios da Foz (Itajaí, Navegantes e Ilhota).
+          </p>
+        </div>
+
+        <!-- Tab 3: Balneabilidade & Praias -->
+        <div class="tab-pane" id="tab-praias" role="tabpanel" aria-labelledby="tab-btn-praias">
+          <div class="beaches-grid">
+            
+            <div class="beach-card glass-card">
+              <div class="beach-badge beach-clean">Própria para Banho</div>
+              <h3 class="beach-title">Praia Brava (Itajaí)</h3>
+              <p class="beach-desc">Ponto 01 (Frente à Av. José Medeiros Vieira). Água transparente com excelente índice bacteriológico e restinga preservada.</p>
+              <div class="beach-stats">
+                <span>E. Coli: &lt; 200 NMP/100ml</span>
+                <span>Bandeira Verde</span>
+              </div>
+            </div>
+
+            <div class="beach-card glass-card">
+              <div class="beach-badge beach-clean">Própria para Banho</div>
+              <h3 class="beach-title">Praia de Cabeçudas (Itajaí)</h3>
+              <p class="beach-desc">Ponto 01 (Meio da enseada). Águas calmas, enseada arborizada e constante circulação marinha.</p>
+              <div class="beach-stats">
+                <span>E. Coli: 310 NMP/100ml</span>
+                <span>Bandeira Verde</span>
+              </div>
+            </div>
+
+            <div class="beach-card glass-card">
+              <div class="beach-badge beach-clean">Própria para Banho</div>
+              <h3 class="beach-title">Praia do Gravatá (Navegantes)</h3>
+              <p class="beach-desc">Ponto 02 (Próximo à Pedra da Miraguaia). Faixa de areia com dunas frontais e boa renovação de correntes oceânicas.</p>
+              <div class="beach-stats">
+                <span>E. Coli: 180 NMP/100ml</span>
+                <span>Bandeira Verde</span>
+              </div>
+            </div>
+
+            <div class="beach-card glass-card">
+              <div class="beach-badge beach-clean">Própria para Banho</div>
+              <h3 class="beach-title">Praia Central de Navegantes</h3>
+              <p class="beach-desc">Ponto 01 (Foz do Rio Gravatá ao Molhe Norte). Monitoramento quinzenal IMA/SC.</p>
+              <div class="beach-stats">
+                <span>E. Coli: 240 NMP/100ml</span>
+                <span>Bandeira Verde</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 4: Simulador Interativo -->
+        <div class="tab-pane" id="tab-simulador" role="tabpanel" aria-labelledby="tab-btn-simulador">
+          <div class="simulator-wrapper glass-card">
+            <div class="simulator-header">
+              <h3 class="simulator-title">Simulador Didático: Cota do Rio Itajaí-Açu vs. Impacto Urbano</h3>
+              <p class="simulator-desc">
+                Arraste o controle deslizante abaixo para entender como diferentes níveis do rio combinados com a maré afetam os bairros de Itajaí e Navegantes.
+              </p>
+            </div>
+
+            <div class="slider-control-group">
+              <div class="slider-labels">
+                <span class="label-min">Normal (1.0m)</span>
+                <span class="label-current" id="sim-current-label">Nível selecionado: <strong id="sim-meter-value">2.50m</strong></span>
+                <span class="label-max">Crítico (9.0m)</span>
+              </div>
+              <input type="range" min="1.0" max="9.0" step="0.25" value="2.5" class="river-range-slider" id="river-slider" aria-label="Simular nível do Rio Itajaí-Açu em metros">
+            </div>
+
+            <div class="sim-result-card" id="sim-result-box">
+              <div class="sim-status-banner status-banner-normal" id="sim-status-banner">
+                <span class="sim-badge" id="sim-badge-level">ESTÁGIO DE NORMALIDADE</span>
+                <span class="sim-water-mark" id="sim-water-mark">Cota: 2.50 m</span>
+              </div>
+              <div class="sim-details-content">
+                <h4 id="sim-impact-title">Leito regular do rio e circulação normal</h4>
+                <p id="sim-impact-desc">
+                  O rio permanece contido em sua calha natural. Navegação de navios no canal portuário e travessia do Ferry-Boat acontecem sem qualquer restrição. Sem alagamentos por refluxo nas bocas de lobo.
+                </p>
+                <div class="sim-affected-neighborhoods">
+                  <strong>Bairros com Atenção:</strong>
+                  <span id="sim-affected-list">Nenhum bairro sob risco nesta cota.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: EL NIÑO & CLIMA REGIONAL -->
+    <section class="section section-elnino" id="el-nino" aria-labelledby="elnino-title">
+      <div class="container">
+        
+        <div class="two-column-layout">
+          <!-- Text / Content Side -->
+          <div class="col-content">
+            <div class="badge-pill">
+              <span class="badge-dot"></span>
+              <span>Dinâmica Climatológica Global & Regional</span>
+            </div>
+            
+            <h2 id="elnino-title" class="section-title">
+              O Fenômeno <span class="gradient-text">El Niño</span> e o Vale do Itajaí
+            </h2>
+            
+            <p class="section-lead">
+              O El Niño (fase quente do ENOS - El Niño Oscilação Sul) decorre do aquecimento anômalo das águas do Oceano Pacífico Equatorial. Mas como isso atinge diretamente as cidades litorâneas de Santa Catarina?
+            </p>
+
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">
+                  <h3>Jato Subtropical Acelerado</h3>
+                  <p>O calor equatorial intensifica os ventos em altitude, retendo frentes frias estacionárias sobre o Sul do Brasil e gerando volumes de chuva 40% a 80% superiores à média histórica.</p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon">🌧️</div>
+                <div class="feature-text">
+                  <h3>Cheias Rápidas na Bacia Hidrográfica</h3>
+                  <p>A bacia do Itajaí-Açu drena mais de 15.000 km². Quando o El Niño despeja precipitações no Alto e Médio Vale (Blumenau, Rio do Sul, Brusque), todo esse volume escoa obrigatoriamente pela foz em Itajaí e Navegantes.</p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon">🌊</div>
+                <div class="feature-text">
+                  <h3>Efeito de Encaixe com a Maré Alta</h3>
+                  <p>Se o pico da cheia fluvial coincide com a maré alta astronômica ou ressaca marítima, o escoamento no oceano é bloqueado, aumentando o nível da água nos bairros ribeirinhos.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="phase-selector">
+              <span class="phase-label">Comparar Fases Climáticas:</span>
+              <div class="phase-buttons" role="group" aria-label="Comparativo ENOS">
+                <button type="button" class="phase-btn active" data-phase="elnino">El Niño (Quente)</button>
+                <button type="button" class="phase-btn" data-phase="neutral">Neutralidade</button>
+                <button type="button" class="phase-btn" data-phase="lanina">La Niña (Frio)</button>
+              </div>
+            </div>
+
+            <div class="phase-card glass-panel" id="phase-explanation">
+              <strong id="phase-card-title">Fase Ativa: El Niño</strong>
+              <p id="phase-card-text">
+                Maior frequência de ciclones extratropicais próximos à costa de SC, chuvas volumosas concentradas na primavera e verão, e invernos mais brandos. Exige prontidão constante das equipes de Defesa Civil e monitoramento das barragens.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Graphic / Scientific Image Side -->
+          <div class="col-visual">
+            <div class="image-showcase-wrapper">
+              <div class="image-frame glass-panel">
+                <img src="assets/images/elnino_map.jpg" alt="Mapa científico de anomalia de temperatura na superfície do Oceano Pacífico demonstrando a fase quente do El Niño" class="scientific-img" loading="lazy">
+                <div class="image-caption">
+                  <div class="caption-header">
+                    <span class="live-dot"></span>
+                    <strong>Anomalia Térmica do Pacífico Equatorial (SST)</strong>
+                  </div>
+                  <p>Aquecimento superior a +1.0°C nas regiões Niño 3.4 altera a circulação de Walker e desvia correntes de umidade para o Litoral Catarinense.</p>
+                </div>
+              </div>
+              <div class="floating-badge-eco">
+                <span class="eco-val">+1.3°C</span>
+                <span class="eco-lbl">Anomalia Térmica</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: BACIA HIDROGRÁFICA & ESTUÁRIO -->
+    <section class="section section-bacia" id="bacia-hidrografica" aria-labelledby="bacia-title">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="badge-pill center-badge">
+            <span class="badge-dot"></span>
+            <span>Geografia Hidrológica Local</span>
+          </div>
+          <h2 id="bacia-title" class="section-title">O Estuário do Itajaí-Açu e Navegantes</h2>
+          <p class="section-subtitle">
+            A foz onde a água doce dos vales se encontra com a força do Atlântico. Conheça as engrenagens naturais que sustentam a economia portuária e o equilíbrio ecológico regional.
+          </p>
+        </div>
+
+        <div class="cards-triad-grid">
+          
+          <article class="triad-card glass-card">
+            <div class="card-icon-bubble">🏞️</div>
+            <h3 class="triad-card-title">Extensão da Bacia</h3>
+            <p class="triad-card-desc">
+              Com mais de 15.000 km², abrange 47 municípios catarinenses. O rio principal percorre mais de 250 km das serras até desaguar entre os molhes da Barra de Itajaí e Navegantes.
+            </p>
+            <div class="triad-metric">
+              <span class="metric-num">15.240</span>
+              <span class="metric-lbl">km² de área drenada</span>
+            </div>
+          </article>
+
+          <article class="triad-card glass-card highlight-border">
+            <div class="card-icon-bubble">🚢</div>
+            <h3 class="triad-card-title">Complexo Portuário</h3>
+            <p class="triad-card-desc">
+              O segundo maior polo de contêineres do Brasil depende diretamente da dragagem ecológica, da gestão de sedimentos carreados pelo rio e do calado hidrológico seguro.
+            </p>
+            <div class="triad-metric">
+              <span class="metric-num">14.0</span>
+              <span class="metric-lbl">metros de calado operacional</span>
+            </div>
+          </article>
+
+          <article class="triad-card glass-card">
+            <div class="card-icon-bubble">🦀</div>
+            <h3 class="triad-card-title">Zona Estuarina</h3>
+            <p class="triad-card-desc">
+              Área de transição estuarina com berçários naturais de peixes, siris e crustáceos. O fluxo de maré renova os nutrientes e sustenta a pesca artesanal comunitária.
+            </p>
+            <div class="triad-metric">
+              <span class="metric-num">+120</span>
+              <span class="metric-lbl">espécies aquáticas catalogadas</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: BIODIVERSIDADE & MATA ATLÂNTICA -->
+    <section class="section section-nature" id="biodiversidade" aria-labelledby="nature-title">
+      <div class="container">
+        
+        <div class="two-column-layout reverse-on-mobile">
+          <!-- Nature Visual Side -->
+          <div class="col-visual">
+            <div class="image-showcase-wrapper">
+              <div class="image-frame glass-panel">
+                <img src="assets/images/mata_atlantica.jpg" alt="Mata Atlântica preservada e mata ciliar ao longo do rio em Santa Catarina com rica flora nativa" class="scientific-img" loading="lazy">
+                <div class="image-caption">
+                  <div class="caption-header">
+                    <span class="live-dot green-dot"></span>
+                    <strong>Mata Ciliar e Proteção de Encostas</strong>
+                  </div>
+                  <p>A cobertura vegetal nativa atua como uma esponja natural que reduz a velocidade das enxurradas e previne o assoreamento do rio.</p>
+                </div>
+              </div>
+              <div class="floating-badge-eco badge-nature">
+                <span class="eco-val">85%</span>
+                <span class="eco-lbl">Retenção de Sedimentos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nature Text Side -->
+          <div class="col-content">
+            <div class="badge-pill">
+              <span class="badge-dot green-dot"></span>
+              <span>Patrimônio Ecológico Catarinense</span>
+            </div>
+
+            <h2 id="nature-title" class="section-title">
+              Preservação da <span class="gradient-text-green">Mata Atlântica</span> e Restinga
+            </h2>
+
+            <p class="section-lead">
+              A melhor infraestrutura contra inundações e erosão costeira é a própria natureza. Em Itajaí e Navegantes, a conservação das matas ciliares e dos manguezais é a chave para a resiliência.
+            </p>
+
+            <div class="nature-pillars-grid">
+              
+              <div class="pillar-card glass-panel">
+                <div class="pillar-icon">🌱</div>
+                <div class="pillar-info">
+                  <h4>Matas Ciliares</h4>
+                  <p>As raízes de árvores nativas como o Ingazeiro e o Palmito Juçara fixam as margens do rio, evitando desmoronamentos durante cheias.</p>
+                </div>
+              </div>
+
+              <div class="pillar-card glass-panel">
+                <div class="pillar-icon">🌾</div>
+                <div class="pillar-info">
+                  <h4>Restingas Costeiras</h4>
+                  <p>Protegem a orla de Navegantes e Itajaí contra a erosão das ressacas do mar, impedindo que a areia invada as avenidas litorâneas.</p>
+                </div>
+              </div>
+
+              <div class="pillar-card glass-panel">
+                <div class="pillar-icon">🦅</div>
+                <div class="pillar-info">
+                  <h4>Corredores Ecológicos</h4>
+                  <p>Conectam os Parques da Atalaia e Morro da Cruz às bacias serranas, abrigando tucanos, capivaras e centenas de aves migratórias.</p>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="tree-planting-tracker glass-panel">
+              <div class="tracker-header">
+                <span class="tracker-icon">🌳</span>
+                <div>
+                  <strong>Meta Regional de Restauração Ciliar</strong>
+                  <span>Iniciativa Comunitária Vale Verde</span>
+                </div>
+                <span class="tracker-count">18.420 / 25.000 mudas</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill progress-nature" style="width: 73%;"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: PREVENÇÃO & RESILIÊNCIA COMUNITÁRIA -->
+    <section class="section section-prevencao" id="prevencao" aria-labelledby="prevencao-title">
+      <div class="container">
+        <div class="section-header text-center">
+          <div class="badge-pill center-badge">
+            <span class="badge-dot"></span>
+            <span>Segurança & Resiliência Urbana</span>
+          </div>
+          <h2 id="prevencao-title" class="section-title">Guia de Prevenção e Ação Comunitária</h2>
+          <p class="section-subtitle">
+            Estar preparado salva vidas e minimiza perdas patrimoniais. Conheça as orientações das equipes de Defesa Civil de Itajaí e Navegantes.
+          </p>
+        </div>
+
+        <div class="action-grid">
+          
+          <!-- Interactive Checklist -->
+          <div class="checklist-card glass-card">
+            <div class="checklist-header">
+              <h3 class="checklist-title">Checklist de Prontidão Residencial</h3>
+              <span class="checklist-counter" id="checklist-progress">0 de 5 concluídos</span>
+            </div>
+            <p class="checklist-desc">
+              Marque os itens que você e sua família já revisaram em sua residência:
+            </p>
+
+            <ul class="interactive-checklist" id="user-checklist">
+              <li class="checklist-item">
+                <label class="custom-checkbox">
+                  <input type="checkbox" data-index="0">
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">Limpeza periódica de calhas, bueiros e ralos próximos à sua residência.</span>
+                </label>
+              </li>
+              <li class="checklist-item">
+                <label class="custom-checkbox">
+                  <input type="checkbox" data-index="1">
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">Conhecer a cota de inundação do seu bairro (ex: Cordeiros, São Vicente, Gravatá).</span>
+                </label>
+              </li>
+              <li class="checklist-item">
+                <label class="custom-checkbox">
+                  <input type="checkbox" data-index="2">
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">Mochila de emergência pronta com remédios, documentos plastificados e lanterna.</span>
+                </label>
+              </li>
+              <li class="checklist-item">
+                <label class="custom-checkbox">
+                  <input type="checkbox" data-index="3">
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">Local elevado seguro previamente planejado para eletrônicos e móveis em caso de alerta.</span>
+                </label>
+              </li>
+              <li class="checklist-item">
+                <label class="custom-checkbox">
+                  <input type="checkbox" data-index="4">
+                  <span class="checkbox-box"></span>
+                  <span class="checkbox-text">Cadastro ativo para receber alertas oficiais da Defesa Civil por SMS ou WhatsApp.</span>
+                </label>
+              </li>
+            </ul>
+
+            <div class="checklist-feedback" id="checklist-feedback">
+              Complete os itens acima para fortalecer sua segurança!
+            </div>
+          </div>
+
+          <!-- Emergency Numbers & Contacts -->
+          <div class="emergency-contacts-card glass-card">
+            <h3 class="checklist-title">Canais de Emergência e Monitoramento</h3>
+            <p class="checklist-desc">
+              Salve estes contatos imediatos para acionamento em caso de enxurradas, deslizamentos ou alagamentos:
+            </p>
+
+            <div class="contact-buttons-list">
+              <div class="contact-pill">
+                <div class="contact-num">199</div>
+                <div class="contact-info">
+                  <strong>Defesa Civil Municipal</strong>
+                  <span>Plantão 24 horas para socorro e vistorias</span>
+                </div>
+              </div>
+
+              <div class="contact-pill">
+                <div class="contact-num">193</div>
+                <div class="contact-info">
+                  <strong>Corpo de Bombeiros Militar</strong>
+                  <span>Resgates, botes de evacuação e emergências</span>
+                </div>
+              </div>
+
+              <div class="contact-pill">
+                <div class="contact-num">190</div>
+                <div class="contact-info">
+                  <strong>Polícia Militar de SC</strong>
+                  <span>Segurança e apoio comunitário</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="emergency-tip-box">
+              <strong>💡 Dica Importante:</strong>
+              <p>Envie o CEP da sua rua por SMS gratuito para o número <strong>40199</strong> para receber os alertas meteorológicos oficiais da Defesa Civil Estadual diretamente no seu celular.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: CADASTRO DE ALERTAS & ENGAJAMENTO -->
+    <section class="section section-cta" id="alertas" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-banner glass-panel">
+          <div class="cta-inner">
+            <div class="cta-text">
+              <div class="badge-pill">
+                <span class="badge-dot"></span>
+                <span>Comunidade Consciente</span>
+              </div>
+              <h2 id="cta-title" class="cta-title">Receba Alertas Ambientais em Primeira Mão</h2>
+              <p class="cta-desc">
+                Cadastre-se gratuitamente no nosso boletim ecológico e meteorológico. Enviamos avisos preventivos sobre níveis do Rio Itajaí-Açu, alertas de ressacas e projetos de reflorestamento em Itajaí e Navegantes.
+              </p>
+            </div>
+
+            <form class="cta-form" id="newsletter-form" novalidate>
+              <div class="form-group">
+                <label for="input-name" class="visually-hidden">Seu Nome</label>
+                <input type="text" id="input-name" class="form-input" placeholder="Seu nome completo" required>
+              </div>
+
+              <div class="form-group">
+                <label for="input-contact" class="visually-hidden">E-mail ou WhatsApp</label>
+                <input type="text" id="input-contact" class="form-input" placeholder="Seu e-mail ou WhatsApp (DDD)" required>
+              </div>
+
+              <div class="form-group">
+                <label for="select-city" class="visually-hidden">Sua Cidade</label>
+                <select id="select-city" class="form-input form-select" required>
+                  <option value="" disabled selected>Selecione sua cidade/região</option>
+                  <option value="itajai">Itajaí - SC</option>
+                  <option value="navegantes">Navegantes - SC</option>
+                  <option value="ilhota">Ilhota - SC</option>
+                  <option value="balneario">Balneário Camboriú - SC</option>
+                  <option value="outro">Outra cidade da Bacia</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-submit btn-glow">
+                <span>Cadastrar Gratuitamente</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+
+              <div class="form-privacy">
+                🔒 Seus dados são 100% protegidos. Sem spam, apenas comunicados ambientais.
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-container">
+      <div class="footer-grid">
+        
+        <div class="footer-col brand-col">
+          <div class="brand-logo footer-logo">
+            <div class="brand-icon">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M16 2C8.268 2 2 8.268 2 16c0 6.13 3.91 11.36 9.38 13.26C11.13 28.5 11 27.77 11 27c0-4.42 3.58-8 8-8 2.21 0 4.21.9 5.66 2.34C28.18 19.34 30 15.86 30 16c0-7.732-6.268-14-14-14z" fill="#10b981"/>
+                <path d="M26.5 18c-1.5 0-2.8.8-3.5 2-.7-1.2-2-2-3.5-2s-2.8.8-3.5 2c-.7-1.2-2-2-3.5-2-2.2 0-4 1.8-4 4 0 3.3 5 7 11 9 6-2 11-5.7 11-9 0-2.2-1.8-4-4-4z" fill="#06b6d4"/>
+              </svg>
+            </div>
+            <span class="brand-title">EcoClima</span>
+          </div>
+          <p class="footer-about">
+            Plataforma independente de conscientização ecológica, monitoramento hidroclimático e resiliência ambiental para a comunidade da Foz do Rio Itajaí-Açu.
+          </p>
+          <div class="footer-carbon-badge">
+            🌿 <span>Hospedagem Sustentável & Baixa Pegada de Carbono</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Navegação</h4>
+          <ul class="footer-links">
+            <li><a href="#monitoramento">Painel ao Vivo</a></li>
+            <li><a href="#el-nino">Dinâmica do El Niño</a></li>
+            <li><a href="#bacia-hidrografica">Bacia Hidrográfica</a></li>
+            <li><a href="#biodiversidade">Mata Atlântica & Restingas</a></li>
+            <li><a href="#prevencao">Guia de Emergência</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Fontes Científicas</h4>
+          <ul class="footer-links">
+            <li><a href="https://ciram.epagri.sc.gov.br/" target="_blank" rel="noopener noreferrer">Epagri/Ciram SC ↗</a></li>
+            <li><a href="https://defesacivil.sc.gov.br/" target="_blank" rel="noopener noreferrer">Defesa Civil Estadual ↗</a></li>
+            <li><a href="https://www.cptec.inpe.br/" target="_blank" rel="noopener noreferrer">CPTEC / INPE ↗</a></li>
+            <li><a href="https://www.cpc.ncep.noaa.gov/" target="_blank" rel="noopener noreferrer">NOAA Climate Prediction ↗</a></li>
+            <li><a href="https://ima.sc.gov.br/" target="_blank" rel="noopener noreferrer">IMA - Balneabilidade ↗</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Municípios Atendidos</h4>
+          <p class="footer-cities">
+            Itajaí, Navegantes, Ilhota, Penha, Balneário Piçarras e municípios da Bacia Hidrográfica do Rio Itajaí.
+          </p>
+          <div class="status-pill-footer">
+            <span class="pulse-beacon beacon-small"></span>
+            <span>Sensores Ativos: 100% Operacionais</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 EcoClima Itajaí-Açu. Desenvolvido para a preservação do meio ambiente e resiliência comunitária.</p>
+        <p class="footer-subtext">Feito com foco em design sustentável, acessibilidade e informação aberta.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- JavaScript Application -->
+  <script src="app.js"></script>
+</body>
+</html>
