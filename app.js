@@ -1,363 +1,403 @@
 /**
- * EcoClima Itajaí-Açu | JavaScript Interactivity
- * Observatório Ambiental e Climático de Itajaí & Navegantes
+ * EcoClima · Aplicativo Meteorológico e Ambiental Nativo
+ * Dados reais via Open-Meteo (Previsão, Rio Itajaí-Açu, Mar & Qualidade do Ar)
  */
 
+const LOCATIONS = {
+  itajai: { name: 'Itajaí · SC', lat: -26.9078, lon: -48.6619 },
+  navegantes: { name: 'Navegantes · SC', lat: -26.8856, lon: -48.6534 }
+};
+
+let currentLocation = LOCATIONS.itajai;
+
 document.addEventListener('DOMContentLoaded', () => {
-  initThemeToggle();
-  initMobileMenu();
-  initAnnouncementBar();
-  initTabs();
-  initTelemetrySimulator();
-  initRiverLevelSimulator();
-  initClimatePhaseSelector();
-  initChecklist();
-  initNewsletterForm();
+  initTheme();
+  initLocationPicker();
+  initRefresh();
+  loadData();
 });
 
 /* --------------------------------------------------------------------------
-   1. Theme Toggle (Light Nature / Dark Forest)
+   1. Tema (Claro / Escuro)
    -------------------------------------------------------------------------- */
-function initThemeToggle() {
-  const themeBtn = document.getElementById('btn-theme-toggle');
-  if (!themeBtn) return;
+function initTheme() {
+  const btn = document.getElementById('btn-theme');
+  const saved = localStorage.getItem('ecoclima_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
 
-  const savedTheme = localStorage.getItem('ecoclima-theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-  document.documentElement.setAttribute('data-theme', currentTheme);
-
-  themeBtn.addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('ecoclima-theme', newTheme);
-    showToast(newTheme === 'dark' ? '🌲 Modo Floresta Noturna ativado' : '☀️ Modo Luz Natural ativado');
+  btn?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('ecoclima_theme', next);
   });
 }
 
 /* --------------------------------------------------------------------------
-   2. Mobile Menu Navigation
+   2. Seletor de Localização (Itajaí / Navegantes / GPS)
    -------------------------------------------------------------------------- */
-function initMobileMenu() {
-  const menuBtn = document.getElementById('btn-mobile-menu');
-  const mainNav = document.getElementById('main-nav');
-  if (!menuBtn || !mainNav) return;
+function initLocationPicker() {
+  const select = document.getElementById('sel-location');
+  if (!select) return;
 
-  menuBtn.addEventListener('click', () => {
-    const isOpen = mainNav.classList.toggle('nav-open');
-    menuBtn.setAttribute('aria-expanded', isOpen);
-  });
-
-  // Close when clicking nav links
-  const navLinks = mainNav.querySelectorAll('.nav-link');
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      mainNav.classList.remove('nav-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-    });
-  });
-}
-
-/* --------------------------------------------------------------------------
-   3. Top Announcement Bar
-   -------------------------------------------------------------------------- */
-function initAnnouncementBar() {
-  const bar = document.getElementById('announcement-bar');
-  const closeBtn = document.getElementById('btn-close-announcement');
-  if (!bar || !closeBtn) return;
-
-  if (sessionStorage.getItem('ecoclima-dismissed-announcement') === 'true') {
-    bar.style.display = 'none';
-  }
-
-  closeBtn.addEventListener('click', () => {
-    bar.style.display = 'none';
-    sessionStorage.setItem('ecoclima-dismissed-announcement', 'true');
-  });
-}
-
-/* --------------------------------------------------------------------------
-   4. Interactive Tabs
-   -------------------------------------------------------------------------- */
-function initTabs() {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabPanes = document.querySelectorAll('.tab-pane');
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.getAttribute('data-target');
-
-      // Update button active states
-      tabButtons.forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-
-      // Update panes
-      tabPanes.forEach(pane => {
-        pane.classList.remove('active');
-      });
-      const activePane = document.getElementById(targetId);
-      if (activePane) {
-        activePane.classList.add('active');
-      }
-    });
-  });
-}
-
-/* --------------------------------------------------------------------------
-   5. Telemetry Refresh & Simulation
-   -------------------------------------------------------------------------- */
-function initTelemetrySimulator() {
-  const refreshBtn = document.getElementById('btn-refresh-telemetry');
-  const valRio = document.getElementById('val-rio-nivel');
-  const valChuva = document.getElementById('val-chuva');
-  const valMare = document.getElementById('val-mare');
-  const gaugeVal = document.getElementById('gauge-level-value');
-  const waterFill = document.getElementById('water-column-fill');
-  const lastUpdate = document.getElementById('last-update-time');
-
-  if (!refreshBtn) return;
-
-  refreshBtn.addEventListener('click', () => {
-    refreshBtn.classList.add('animating');
-    refreshBtn.disabled = true;
-
-    // Simulate small natural river level fluctuation (+/- 0.05m)
-    const baseLevel = 1.42;
-    const delta = (Math.random() * 0.16 - 0.08).toFixed(2);
-    const newLevel = Math.max(1.10, Math.min(2.10, baseLevel + parseFloat(delta))).toFixed(2);
-    
-    // Animate values
-    if (valRio) valRio.innerHTML = `${newLevel} <span class="stat-unit">m</span>`;
-    if (gaugeVal) gaugeVal.textContent = newLevel;
-
-    // Calculate water column fill percent (max 5.5m scale)
-    const fillPercent = Math.min(100, Math.max(10, (newLevel / 5.5) * 100)).toFixed(0);
-    if (waterFill) waterFill.style.height = `${fillPercent}%`;
-
-    // Simulated tide
-    if (valMare) {
-      const tideDelta = (0.75 + Math.random() * 0.35).toFixed(2);
-      valMare.innerHTML = `${tideDelta} <span class="stat-unit">m</span>`;
-    }
-
-    // Timestamp
-    if (lastUpdate) {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      lastUpdate.textContent = `Atualizado agora às ${timeStr}`;
-    }
-
-    setTimeout(() => {
-      refreshBtn.classList.remove('animating');
-      refreshBtn.disabled = false;
-      showToast('📡 Dados hidrológicos atualizados com sucesso!');
-    }, 600);
-  });
-}
-
-/* --------------------------------------------------------------------------
-   6. River Level vs. Urban Impact Simulator Slider
-   -------------------------------------------------------------------------- */
-function initRiverLevelSimulator() {
-  const slider = document.getElementById('river-slider');
-  const meterVal = document.getElementById('sim-meter-value');
-  const statusBanner = document.getElementById('sim-status-banner');
-  const badgeLevel = document.getElementById('sim-badge-level');
-  const waterMark = document.getElementById('sim-water-mark');
-  const impactTitle = document.getElementById('sim-impact-title');
-  const impactDesc = document.getElementById('sim-impact-desc');
-  const affectedList = document.getElementById('sim-affected-list');
-
-  if (!slider) return;
-
-  const updateSimulation = (level) => {
-    meterVal.textContent = `${level.toFixed(2)}m`;
-    waterMark.textContent = `Cota: ${level.toFixed(2)} m`;
-
-    // Reset status classes
-    statusBanner.className = 'sim-status-banner';
-
-    if (level < 3.0) {
-      // Normal
-      statusBanner.classList.add('status-banner-normal');
-      badgeLevel.textContent = 'ESTÁGIO DE NORMALIDADE';
-      impactTitle.textContent = 'Leito regular do rio e circulação normal';
-      impactDesc.textContent = 'O rio permanece contido em sua calha natural. Navegação de navios no canal portuário e travessia do Ferry-Boat acontecem sem restrições. Sem alagamentos por refluxo nas bocas de lobo.';
-      affectedList.textContent = 'Nenhum bairro sob risco nesta cota.';
-    } else if (level < 4.5) {
-      // Atenção
-      statusBanner.classList.add('status-banner-atencao');
-      badgeLevel.textContent = 'ESTÁGIO DE ATENÇÃO';
-      impactTitle.textContent = 'Refluxo inicial de maré e áreas baixas';
-      impactDesc.textContent = 'Em períodos de maré alta combinada, as galerias pluviais começam a reter água. Primeiros pontos de alagamento por refluxo nas partes mais baixas de Itajaí.';
-      affectedList.textContent = 'Cordeiros (Parte Baixa / Murta), Fazenda (proximidades da Beira-Rio) e Navegantes (Foz do Rio Gravatá).';
-    } else if (level < 5.5) {
-      // Alerta
-      statusBanner.classList.add('status-banner-alerta');
-      badgeLevel.textContent = 'ESTÁGIO DE ALERTA';
-      impactTitle.textContent = 'Transbordamento em vias ribeirinhas e vias arteriais';
-      impactDesc.textContent = 'Início de transbordamento do Rio Itajaí-Açu e afluentes (Rio Itajaí-Mirim). Trânsito interrompido em vias arteriais baixas. Recomendada a retirada preventiva de móveis e veículos em áreas históricas.';
-      affectedList.textContent = 'Cordeiros, São Vicente, Murta, Bambuzal, Dom Bosco e margem do Rio Gravatá em Navegantes.';
-    } else if (level < 7.0) {
-      // Emergência 1
-      statusBanner.classList.add('status-banner-emergencia');
-      badgeLevel.textContent = 'EMERGÊNCIA NÍVEL 1';
-      impactTitle.textContent = 'Cheia significativa e abertura de abrigos municipais';
-      impactDesc.textContent = 'Transbordamento severo. A circulação do Ferry-Boat entre Itajaí e Navegantes pode ser paralisada devido à velocidade da correnteza e balseiros flutuantes. Abertura imediata de abrigos de acolhimento.';
-      affectedList.textContent = 'Cordeiros, São Vicente, Fazenda, Centro (Itajaí), Santa Clara, Machados e São Paulo (Navegantes).';
-    } else {
-      // Emergência Crítica
-      statusBanner.classList.add('status-banner-emergencia');
-      badgeLevel.textContent = 'EMERGÊNCIA CRÍTICA (CALAMIDADE)';
-      impactTitle.textContent = 'Grande inundação histórica na Foz do Vale';
-      impactDesc.textContent = 'Cotas que exigem plano de contingência total e apoio do Exército/Defesa Civil Nacional. Evacuação mandatória de todas as zonas ribeirinhas. Acesso terrestre entre municípios severamente comprometido.';
-      affectedList.textContent = 'Quase a totalidade das áreas baixas de Itajaí, Navegantes, Ilhota e ligação BR-101 sob risco de corte hídrico.';
-    }
-  };
-
-  slider.addEventListener('input', (e) => {
-    updateSimulation(parseFloat(e.target.value));
-  });
-}
-
-/* --------------------------------------------------------------------------
-   7. Climate Phase Selector (El Niño vs. La Niña vs. Neutralidade)
-   -------------------------------------------------------------------------- */
-function initClimatePhaseSelector() {
-  const buttons = document.querySelectorAll('.phase-btn');
-  const title = document.getElementById('phase-card-title');
-  const text = document.getElementById('phase-card-text');
-
-  if (!buttons.length || !title || !text) return;
-
-  const data = {
-    elnino: {
-      title: 'Fase Ativa: El Niño (Aquecimento Anômalo do Pacífico)',
-      text: 'Maior frequência de ciclones extratropicais próximos à costa de SC, chuvas volumosas concentradas na primavera e verão, e invernos mais brandos. Exige prontidão constante das equipes de Defesa Civil e monitoramento intensivo das barragens do Alto Vale.'
-    },
-    neutral: {
-      title: 'Fase de Neutralidade Climatológica',
-      text: 'Águas do Pacífico Equatorial próximas da média histórica. O regime de chuvas em Itajaí e Navegantes obedece aos padrões sazonais tradicionais (pancadas de verão convectivas e passagens regulares de frentes frias sem retenção prolongada).'
-    },
-    lanina: {
-      title: 'Fase La Niña (Resfriamento Anômalo do Pacífico)',
-      text: 'Tende a provocar estiagens ou chuvas abaixo da média no Sul do Brasil, intercaladas por incursões de ar polar mais intensas e prolongadas no inverno. Risco de estiagem hídrica agrícola no Vale, embora eventos extremos isolados ainda possam ocorrer.'
-    }
-  };
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const phase = btn.getAttribute('data-phase');
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      if (data[phase]) {
-        title.textContent = data[phase].title;
-        text.textContent = data[phase].text;
-      }
-    });
-  });
-}
-
-/* --------------------------------------------------------------------------
-   8. Family Preparedness Checklist with LocalStorage
-   -------------------------------------------------------------------------- */
-function initChecklist() {
-  const checkboxes = document.querySelectorAll('#user-checklist input[type="checkbox"]');
-  const progressEl = document.getElementById('checklist-progress');
-  const feedbackEl = document.getElementById('checklist-feedback');
-  if (!checkboxes.length) return;
-
-  const STORAGE_KEY = 'ecoclima-checklist-state';
-  const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-  // Load saved state
-  checkboxes.forEach((cb, idx) => {
-    if (savedState[idx]) {
-      cb.checked = true;
-    }
-
-    cb.addEventListener('change', () => {
-      savedState[idx] = cb.checked;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedState));
-      updateProgress();
-    });
-  });
-
-  function updateProgress() {
-    const total = checkboxes.length;
-    const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
-    
-    if (progressEl) {
-      progressEl.textContent = `${completed} de ${total} concluídos`;
-    }
-
-    if (feedbackEl) {
-      if (completed === 0) {
-        feedbackEl.textContent = 'Complete os itens acima para fortalecer sua segurança!';
-        feedbackEl.style.color = 'var(--text-secondary)';
-      } else if (completed < total) {
-        feedbackEl.textContent = `Ótimo progresso! Faltam apenas ${total - completed} itens para sua residência estar 100% prevenida.`;
-        feedbackEl.style.color = 'var(--eco-600)';
+  select.addEventListener('change', () => {
+    const val = select.value;
+    if (val === 'gps') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            currentLocation = {
+              name: 'Posição Atual',
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude
+            };
+            loadData();
+          },
+          () => {
+            showNotice('GPS não autorizado. Mantendo Itajaí.');
+            select.value = 'itajai';
+            currentLocation = LOCATIONS.itajai;
+            loadData();
+          }
+        );
       } else {
-        feedbackEl.textContent = '🎉 Parabéns! Sua família concluiu todas as medidas preventivas essenciais!';
-        feedbackEl.style.color = 'var(--eco-700)';
-        showToast('🛡️ Parabéns! Checklist de prontidão 100% completo!');
+        showNotice('Geolocalização não suportada.');
+        select.value = 'itajai';
       }
+    } else if (LOCATIONS[val]) {
+      currentLocation = LOCATIONS[val];
+      loadData();
     }
-  }
-
-  updateProgress();
-}
-
-/* --------------------------------------------------------------------------
-   9. Newsletter & Community Alerts Form
-   -------------------------------------------------------------------------- */
-function initNewsletterForm() {
-  const form = document.getElementById('newsletter-form');
-  if (!form) return;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const nameInput = document.getElementById('input-name');
-    const contactInput = document.getElementById('input-contact');
-    const citySelect = document.getElementById('select-city');
-
-    if (!nameInput.value.trim() || !contactInput.value.trim() || !citySelect.value) {
-      showToast('⚠️ Por favor, preencha todos os campos do cadastro.');
-      return;
-    }
-
-    const cityName = citySelect.options[citySelect.selectedIndex].text;
-    showToast(`✅ Obrigado, ${nameInput.value.trim()}! Alertas configurados para ${cityName}.`);
-    form.reset();
   });
 }
 
 /* --------------------------------------------------------------------------
-   10. Toast Notification Helper
+   3. Botão de Atualizar
    -------------------------------------------------------------------------- */
-function showToast(message) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.innerHTML = `<span>${message}</span>`;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add('toast-out');
-    toast.addEventListener('animationend', () => {
-      toast.remove();
+function initRefresh() {
+  const btn = document.getElementById('btn-refresh');
+  btn?.addEventListener('click', () => {
+    btn.classList.add('rotating');
+    loadData().finally(() => {
+      setTimeout(() => btn.classList.remove('rotating'), 600);
     });
-  }, 4000);
+  });
+}
+
+/* --------------------------------------------------------------------------
+   4. Carga e Conexão com as APIs Meteorológicas
+   -------------------------------------------------------------------------- */
+async function loadData() {
+  hideNotice();
+  const { lat, lon } = currentLocation;
+
+  // Carrega cache prévio se disponível para exibição instantânea
+  const cached = localStorage.getItem(`cache_${lat.toFixed(2)}_${lon.toFixed(2)}`);
+  if (cached) {
+    try {
+      renderAll(JSON.parse(cached));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  try {
+    const [weatherRes, marineRes, floodRes, airRes] = await Promise.allSettled([
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max&timezone=America%2FSao_Paulo&forecast_days=7`
+      ),
+      fetch(
+        `https://marine-api.open-meteo.com/v1/marine?latitude=-26.91&longitude=-48.58&current=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=America%2FSao_Paulo`
+      ),
+      fetch(
+        `https://flood-api.open-meteo.com/v1/flood?latitude=-26.90&longitude=-48.70&daily=river_discharge,river_discharge_max&forecast_days=3`
+      ),
+      fetch(
+        `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=european_aqi,pm2_5,uv_index&timezone=America%2FSao_Paulo`
+      )
+    ]);
+
+    const weather = weatherRes.status === 'fulfilled' && weatherRes.value.ok ? await weatherRes.value.json() : null;
+    const marine = marineRes.status === 'fulfilled' && marineRes.value.ok ? await marineRes.value.json() : null;
+    const flood = floodRes.status === 'fulfilled' && floodRes.value.ok ? await floodRes.value.json() : null;
+    const air = airRes.status === 'fulfilled' && airRes.value.ok ? await airRes.value.json() : null;
+
+    if (!weather) {
+      throw new Error('Falha na resposta da API meteorológica.');
+    }
+
+    const payload = { weather, marine, flood, air, timestamp: Date.now() };
+    localStorage.setItem(`cache_${lat.toFixed(2)}_${lon.toFixed(2)}`, JSON.stringify(payload));
+    renderAll(payload);
+
+    updateTimestamp();
+  } catch (err) {
+    console.warn('Erro ao atualizar dados:', err);
+    showNotice('Não foi possível sincronizar novos dados. Exibindo dados locais.');
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Renderização Completa
+   -------------------------------------------------------------------------- */
+function renderAll(payload) {
+  const { weather, marine, flood, air } = payload;
+  if (!weather || !weather.current) return;
+
+  const cur = weather.current;
+  const wmo = getWmoInfo(cur.weather_code);
+
+  // Hero
+  setText('now-temp', `${Math.round(cur.temperature_2m)}°`);
+  setText('now-icon', wmo.icon);
+  setText('now-cond', wmo.desc);
+  setText('now-feels', `${Math.round(cur.apparent_temperature)}°`);
+
+  if (weather.daily) {
+    setText('now-min', `${Math.round(weather.daily.temperature_2m_min[0])}°`);
+    setText('now-max', `${Math.round(weather.daily.temperature_2m_max[0])}°`);
+  }
+
+  // Métricas Compactas
+  setText('val-rain', `${cur.precipitation.toFixed(1)}`);
+  const popMax = weather.daily?.precipitation_probability_max?.[0] ?? 0;
+  setText('sub-rain', `Probabilidade: ${popMax}%`);
+
+  const windDir = degToCompass(cur.wind_direction_10m);
+  setText('val-wind', `${Math.round(cur.wind_speed_10m)}`);
+  setText('sub-wind', `Rumo: ${windDir} · Rajadas: ${Math.round(cur.wind_gusts_10m)} km/h`);
+
+  setText('val-humidity', `${cur.relative_humidity_2m}`);
+  const dewPoint = (cur.temperature_2m - (100 - cur.relative_humidity_2m) / 5).toFixed(0);
+  setText('sub-humidity', `Ponto de orvalho: ${dewPoint}°C`);
+
+  const uvVal = air?.current?.uv_index ?? weather.daily?.uv_index_max?.[0] ?? 0;
+  setText('val-uv', uvVal.toFixed(1));
+  setText('sub-uv', `Nível: ${getUvCategory(uvVal)}`);
+
+  // Rio Itajaí-Açu
+  const riverDischarge = flood?.daily?.river_discharge?.[0];
+  if (riverDischarge) {
+    const disVal = Math.round(riverDischarge);
+    setText('val-river', `${disVal}`);
+    setText('quick-river-val', `${disVal} m³/s`);
+    const statusEl = document.getElementById('quick-river-status');
+    if (statusEl) {
+      if (disVal > 2500) {
+        statusEl.textContent = 'Alerta';
+        statusEl.style.color = '#ef4444';
+      } else if (disVal > 1500) {
+        statusEl.textContent = 'Atenção';
+        statusEl.style.color = '#f59e0b';
+      } else {
+        statusEl.textContent = 'Normal';
+        statusEl.style.color = '#34d399';
+      }
+    }
+  }
+
+  // Mar & Ondas
+  const waveH = marine?.current?.wave_height;
+  const seaTemp = marine?.current?.sea_surface_temperature;
+  const wavePeriod = marine?.current?.wave_period;
+  if (waveH !== undefined && waveH !== null) {
+    setText('val-wave', `${waveH.toFixed(1)}`);
+    setText('quick-wave-val', `${waveH.toFixed(1)} m`);
+    setText('sub-wave', `Água: ${seaTemp ? seaTemp.toFixed(1) + '°C' : '--'} · Período: ${wavePeriod ? Math.round(wavePeriod) + 's' : '--'}`);
+  }
+
+  // Qualidade do Ar
+  const aqiVal = air?.current?.european_aqi;
+  const pm25 = air?.current?.pm2_5;
+  if (aqiVal !== undefined && aqiVal !== null) {
+    setText('val-aqi', `${Math.round(aqiVal)}`);
+    setText('sub-aqi', `PM2.5: ${pm25 ? pm25.toFixed(1) : '--'} µg/m³ · ${getAqiDesc(aqiVal)}`);
+  }
+
+  setText('val-pressure', `${Math.round(cur.surface_pressure)}`);
+  setText('sub-pressure', cur.surface_pressure > 1013 ? 'Alta pressão (estável)' : 'Baixa pressão');
+
+  // Faixa Horária (24h)
+  renderHourly(weather.hourly);
+
+  // Previsão 7 Dias
+  renderDaily(weather.daily);
+}
+
+/* --------------------------------------------------------------------------
+   6. Faixa Horária (24h)
+   -------------------------------------------------------------------------- */
+function renderHourly(hourly) {
+  const container = document.getElementById('hourly-strip');
+  if (!container || !hourly || !hourly.time) return;
+
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  let startIndex = 0;
+  for (let i = 0; i < hourly.time.length; i++) {
+    const t = new Date(hourly.time[i]);
+    if (t.getHours() === currentHour && t.getDate() === now.getDate()) {
+      startIndex = i;
+      break;
+    }
+  }
+
+  const hoursToShow = 24;
+  let html = '';
+
+  for (let i = startIndex; i < startIndex + hoursToShow && i < hourly.time.length; i++) {
+    const date = new Date(hourly.time[i]);
+    const isNow = i === startIndex;
+    const timeStr = isNow ? 'Agora' : `${date.getHours()}h`;
+    const temp = Math.round(hourly.temperature_2m[i]);
+    const pop = hourly.precipitation_probability ? hourly.precipitation_probability[i] : 0;
+    const wmo = getWmoInfo(hourly.weather_code[i]);
+
+    html += `
+      <div class="hourly-item ${isNow ? 'is-now' : ''}">
+        <span class="hourly-time">${timeStr}</span>
+        <span class="hourly-icon">${wmo.icon}</span>
+        <span class="hourly-temp">${temp}°</span>
+        <span class="hourly-pop">${pop > 10 ? pop + '%' : ''}</span>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+/* --------------------------------------------------------------------------
+   7. Previsão 7 Dias (Estilo Nativo)
+   -------------------------------------------------------------------------- */
+function renderDaily(daily) {
+  const container = document.getElementById('daily-list');
+  if (!container || !daily || !daily.time) return;
+
+  // Encontra mín global e máx global para a escala visual das barras
+  const minTempAll = Math.min(...daily.temperature_2m_min);
+  const maxTempAll = Math.max(...daily.temperature_2m_max);
+  const tempRange = Math.max(1, maxTempAll - minTempAll);
+
+  let html = '';
+
+  for (let i = 0; i < daily.time.length; i++) {
+    const date = new Date(daily.time[i] + 'T12:00:00');
+    const isToday = i === 0;
+    const dayName = isToday
+      ? 'Hoje'
+      : date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+
+    const tMin = Math.round(daily.temperature_2m_min[i]);
+    const tMax = Math.round(daily.temperature_2m_max[i]);
+    const pop = daily.precipitation_probability_max?.[i] ?? 0;
+    const wmo = getWmoInfo(daily.weather_code[i]);
+
+    // Cálculo da posição da barra
+    const leftPercent = Math.max(0, ((tMin - minTempAll) / tempRange) * 100);
+    const widthPercent = Math.max(10, ((tMax - tMin) / tempRange) * 100);
+
+    html += `
+      <div class="daily-row">
+        <span class="daily-day">${dayName}</span>
+        <span class="daily-icon">${wmo.icon}</span>
+        <span class="daily-pop">${pop > 10 ? pop + '%' : ''}</span>
+        <div class="daily-bar-wrap">
+          <div class="daily-bar-fill" style="left: ${leftPercent}%; width: ${widthPercent}%;"></div>
+        </div>
+        <div class="daily-temps">
+          <span class="temp-min">${tMin}°</span>
+          <span class="temp-max">${tMax}°</span>
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+/* --------------------------------------------------------------------------
+   8. Utilitários Meteorológicos (WMO, Bússola, UV, AQI)
+   -------------------------------------------------------------------------- */
+function getWmoInfo(code) {
+  switch (code) {
+    case 0:
+      return { desc: 'Céu Limpo', icon: '☀️' };
+    case 1:
+      return { desc: 'Predom. Ensolarado', icon: '🌤️' };
+    case 2:
+      return { desc: 'Parcialmente Nublado', icon: '⛅' };
+    case 3:
+      return { desc: 'Nublado', icon: '☁️' };
+    case 45:
+    case 48:
+      return { desc: 'Nevoeiro', icon: '🌫️' };
+    case 51:
+    case 53:
+    case 55:
+      return { desc: 'Garoa', icon: '🌦️' };
+    case 61:
+    case 63:
+    case 65:
+      return { desc: 'Chuva', icon: '🌧️' };
+    case 80:
+    case 81:
+    case 82:
+      return { desc: 'Pancadas de Chuva', icon: '🌧️' };
+    case 95:
+    case 96:
+    case 99:
+      return { desc: 'Trovoadas', icon: '⛈️' };
+    default:
+      return { desc: 'Tempo Firme', icon: '⛅' };
+  }
+}
+
+function degToCompass(deg) {
+  const directions = ['N', 'NNE', 'NE', 'ENE', 'L', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'O', 'WNW', 'NW', 'NNW'];
+  const idx = Math.round(deg / 22.5) % 16;
+  return directions[idx];
+}
+
+function getUvCategory(uv) {
+  if (uv <= 2) return 'Baixo';
+  if (uv <= 5) return 'Moderado';
+  if (uv <= 7) return 'Alto';
+  if (uv <= 10) return 'Muito Alto';
+  return 'Extremo';
+}
+
+function getAqiDesc(aqi) {
+  if (aqi <= 20) return 'Excelente';
+  if (aqi <= 40) return 'Boa';
+  if (aqi <= 60) return 'Moderada';
+  if (aqi <= 80) return 'Ruim';
+  return 'Muito Ruim';
+}
+
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function showNotice(msg) {
+  const banner = document.getElementById('notice-banner');
+  if (banner) {
+    banner.textContent = msg;
+    banner.hidden = false;
+  }
+}
+
+function hideNotice() {
+  const banner = document.getElementById('notice-banner');
+  if (banner) banner.hidden = true;
+}
+
+function updateTimestamp() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const liveEl = document.getElementById('live-time');
+  const footerEl = document.getElementById('footer-update');
+  if (liveEl) liveEl.textContent = `${timeStr}`;
+  if (footerEl) footerEl.textContent = `Atualizado às ${timeStr}`;
 }

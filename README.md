@@ -1,57 +1,29 @@
-# EcoClima Itajaí-Açu | Observatório Ambiental e Climático
+# EcoClima · Monitoramento em Tempo Real (Itajaí & Navegantes)
 
-> **Plataforma web de monitoramento hidroclimático, dinâmicas do El Niño e conservação da biodiversidade costeira na Foz do Rio Itajaí-Açu (Itajaí e Navegantes - SC).**
-
----
-
-## 🌿 Sobre o Projeto
-
-O **EcoClima** é um portal moderno e sustentável desenvolvido para informar, conscientizar e proteger as comunidades de **Itajaí** e **Navegantes** contra os impactos de eventos climáticos extremos provocados pelo fenômeno **El Niño**, integrando:
-
-- **Telemetria em Tempo Real**: Níveis do Rio Itajaí-Açu, índice oceânico ONI, tábua de marés portuárias e regime pluviométrico.
-- **Painel das Barragens do Alto Vale**: Monitoramento das comportas e capacidades das barragens de Taió (Oeste), Ituporanga (Sul) e José Boiteux (Norte).
-- **Balneabilidade e Qualidade da Água**: Status das praias (Brava, Cabeçudas, Gravatá e Central).
-- **Simulador Interativo de Cheias**: Ferramenta didática para simular a cota do rio versus o impacto nos bairros ribeirinhos (Cordeiros, São Vicente, Murta, Fazenda).
-- **Ciência do El Niño**: Mapas de anomalia térmica da superfície do mar no Pacífico e explicação do jato subtropical.
-- **Conservação da Mata Atlântica & Restingas**: Importância da vegetação ciliar contra enchentes e metas de reflorestamento comunitário.
-- **Checklist de Prontidão Comunitária**: Guia de prevenção residencial com persistência no navegador.
+Aplicação web nativa e ultrarrápida para consulta de condições meteorológicas, marítimas e hidrológicas da região da Foz do Rio Itajaí-Açu em tempo real.
 
 ---
 
-## 🎨 Identidade Visual e Design
+## ⚡ Características
 
-- **Estética Sustentável**: Paleta com tons de verde floresta, esmeralda, azul oceânico e toques terrosos suaves.
-- **Glassmorphism**: Efeitos de transparência suave e desfoque (`backdrop-filter`) de alto padrão.
-- **Modos Claro & Escuro (Dark Forest)**: Alternância dinâmica com persistência em `localStorage`.
-- **Microanimações**: Simulação de ondas na régua hidrológica, pulso de sensores ativos e transições suaves.
-- **100% Responsivo**: Layout otimizado para celulares, tablets e desktops.
-
----
-
-## 🚀 Como Executar
-
-Por ser construído com tecnologias web modernas puras (**HTML5, Vanilla CSS e Vanilla JavaScript**), o projeto não depende de instalação de pacotes pesados ou servidores complexos:
-
-1. Dê um duplo clique no arquivo [`index.html`](index.html) para abrir diretamente no seu navegador preferido (Chrome, Edge, Firefox, Safari);
-2. Ou use qualquer servidor estático local (como a extensão *Live Server* do VS Code ou `python -m http.server 8000`).
-
----
-
-## 📁 Estrutura de Arquivos
-
-```
-howsladasconta/
-├── assets/
-│   └── images/
-│       ├── hero_itajai.jpg        # Fotografia aérea da foz e mata atlântica
-│       ├── elnino_map.jpg          # Mapa científico da anomalia do Pacífico
-│       └── mata_atlantica.jpg      # Biodiversidade e mata ciliar preservada
-├── index.html                      # Estrutura semântica do portal
-├── style.css                       # Sistema de design, tokens e temas
-├── app.js                          # Lógica interativa, telemetria e simulador
-└── README.md                       # Documentação do projeto
-```
+- **Totalmente Nativo & Direto ao Ponto**: Interface enxuta no estilo *Google Clima* / *Apple Weather*, sem propagandas, sem textos longos ou formulários.
+- **Dados Reais Integrados**: Conexão direta via API (Open-Meteo, ECMWF, GFS, GloFAS):
+  - **Temperatura e Sensação** em tempo real
+  - **Previsão Horária (24 horas)** deslizável
+  - **Precipitação & Probabilidade de Chuva**
+  - **Vento & Rajadas** com direção cardeal
+  - **Vazão do Rio Itajaí-Açu (m³/s)**
+  - **Altura das Ondas e Temperatura do Mar**
+  - **Qualidade do Ar (AQI & PM2.5)** e **Índice UV**
+  - **Previsão de 7 Dias** com barras visuais térmicas
+- **Alternador de Cidades**: Alternância rápida entre Itajaí, Navegantes e GPS.
+- **Modo Escuro / Claro**: Alternância dinâmica de tema com persistência local.
+- **Cache Local & Suporte Offline**: Carregamento instantâneo no navegador.
 
 ---
 
-© 2026 EcoClima Itajaí-Açu.
+## 🚀 Como Visualizar
+
+Abra o arquivo [`index.html`](index.html) em qualquer navegador ou acesse localmente em:
+
+`http://localhost:8080`

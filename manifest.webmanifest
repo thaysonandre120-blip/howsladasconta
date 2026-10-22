@@ -1,0 +1,15 @@
+{
+  "name": "EcoClima Itajaí",
+  "short_name": "EcoClima",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07150e",
+  "theme_color": "#07150e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
