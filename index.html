@@ -1,215 +1,528 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>EcoClima · Tempo, Rio e Mar em Tempo Real</title>
-  <meta name="description" content="Condições meteorológicas, marés e vazão do Rio Itajaí-Açu em tempo real com dados de satélites e estações.">
-  <meta name="theme-color" content="#07150e">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoClima — Sistema de Monitoramento Hidrometeorológico</title>
+  <meta name="description" content="Projeto acadêmico de monitoramento meteorológico, marítimo e hidrológico para os municípios de Itajaí e Navegantes.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="app-container">
+  <div class="container">
     
-    <!-- Top Bar -->
-    <header class="app-header">
-      <div class="brand">
-        <img src="icon.svg" alt="" width="28" height="28" class="brand-img">
-        <span class="brand-title">EcoClima</span>
+    <!-- Cabeçalho Acadêmico -->
+    <header class="cabecalho">
+      <div class="cabecalho-principal">
+        <h1 class="titulo-projeto">EcoClima — Sistema de Monitoramento Hidrometeorológico</h1>
+        <p class="subtitulo-academico">
+          Instituto Federal de Santa Catarina (IFSC) — Câmpus Itajaí<br>
+          Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas (TADS)<br>
+          Projeto Integrador · Foco Regional: Bacia do Rio Itajaí-Açu e Foz Costeira
+        </p>
       </div>
 
-      <div class="header-center">
-        <div class="location-picker">
-          <svg class="loc-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <select id="sel-location" aria-label="Selecionar local">
-            <option value="itajai">Itajaí · SC</option>
-            <option value="navegantes">Navegantes · SC</option>
-            <option value="gps">📍 Minha Posição</option>
+      <div class="barra-controles">
+        <div class="controle-grupo">
+          <label for="sel-location"><strong>Município selecionado:</strong></label>
+          <select id="sel-location">
+            <option value="itajai">Itajaí (SC)</option>
+            <option value="navegantes">Navegantes (SC)</option>
+            <option value="gps">Coordenadas atuais (GPS)</option>
           </select>
         </div>
-      </div>
 
-      <div class="header-actions">
-        <div class="live-pill" id="live-pill" title="Dados em tempo real">
-          <span class="live-dot"></span>
-          <span class="live-text" id="live-time">Ao vivo</span>
+        <div class="controle-grupo">
+          <button type="button" id="btn-refresh" class="botao">Atualizar dados</button>
+          <span class="texto-auxiliar">Última leitura: <span id="live-time">—</span></span>
         </div>
-        <button type="button" class="icon-btn" id="btn-refresh" aria-label="Atualizar dados" title="Atualizar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-        </button>
-        <button type="button" class="icon-btn" id="btn-theme" aria-label="Alternar tema claro/escuro" title="Tema">
-          <span class="theme-icon-dark">☀️</span>
-          <span class="theme-icon-light">🌙</span>
-        </button>
       </div>
     </header>
 
-    <!-- Error/Notice Banner -->
-    <div class="notice-banner" id="notice-banner" hidden></div>
+    <!-- Menu de Navegação em Abas Tradicionais -->
+    <nav class="menu-abas" aria-label="Módulos do sistema">
+      <button type="button" class="nav-tab active" data-view="overview" id="tab-overview">Visão Geral</button>
+      <button type="button" class="nav-tab" data-view="radar" id="tab-radar">Radar Meteorológico</button>
+      <button type="button" class="nav-tab" data-view="river" id="tab-river">Rio Itajaí-Açu</button>
+      <button type="button" class="nav-tab" data-view="marine" id="tab-marine">Mar e Navegação</button>
+      <button type="button" class="nav-tab" data-view="air" id="tab-air">Qualidade do Ar e UV</button>
+      <button type="button" class="nav-tab" data-view="alerts" id="tab-alerts">Limiares e Alertas</button>
+    </nav>
 
-    <!-- Main Dashboard -->
-    <main class="app-main">
-      
-      <!-- HERO: Tempo Agora -->
-      <section class="card hero-card" id="card-hero">
-        <div class="hero-left">
-          <div class="hero-temp-row">
-            <span class="hero-temp" id="now-temp">--°</span>
-            <span class="hero-icon" id="now-icon">⛅</span>
-          </div>
-          <div class="hero-cond" id="now-cond">Carregando dados meteorológicos...</div>
-          <div class="hero-meta">
-            <span>Sensação <strong id="now-feels">--°</strong></span>
-            <span class="meta-dot">·</span>
-            <span>Mín <strong id="now-min">--°</strong></span>
-            <span class="meta-dot">·</span>
-            <span>Máx <strong id="now-max">--°</strong></span>
-          </div>
-        </div>
+    <!-- Caixa de Aviso / Erro do Sistema -->
+    <div class="aviso-sistema" id="notice-banner" hidden></div>
 
-        <div class="hero-right">
-          <div class="quick-river-badge" id="hero-river-badge">
-            <div class="quick-river-icon">🌊</div>
-            <div>
-              <div class="quick-river-label">Rio Itajaí-Açu</div>
-              <div class="quick-river-val" id="quick-river-val">-- m³/s</div>
-            </div>
-            <span class="quick-river-status" id="quick-river-status">Normal</span>
-          </div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo-principal">
 
-          <div class="quick-river-badge" id="hero-sea-badge">
-            <div class="quick-river-icon">⚓</div>
-            <div>
-              <div class="quick-river-label">Ondas no Canal</div>
-              <div class="quick-river-val" id="quick-wave-val">-- m</div>
-            </div>
-            <span class="quick-river-status status-blue" id="quick-wave-status">Calmo</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- PREVISÃO HORÁRIA (24h) -->
-      <section class="card card-hourly">
-        <div class="card-title-row">
-          <h2 class="card-title">Previsão 24 Horas</h2>
-          <span class="card-caption" id="hourly-caption">Temperatura e Chuva</span>
-        </div>
-        <div class="hourly-strip" id="hourly-strip">
-          <!-- Filled by app.js -->
-        </div>
-      </section>
-
-      <!-- MÉTRICAS AMBIENTAIS (Cards compactos) -->
-      <section class="metrics-grid">
+      <!-- ===================================================================
+           MÓDULO 1: VISÃO GERAL
+           =================================================================== -->
+      <section class="view-panel active" id="view-overview">
         
-        <!-- Chuva -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">🌧️</span>
-            <span class="metric-title">Precipitação</span>
+        <!-- Resumo das Condições Atuais -->
+        <div class="bloco-secao">
+          <h2>1. Condições Meteorológicas Atuais</h2>
+          
+          <div class="resumo-tempo">
+            <div class="resumo-destaque">
+              <span class="temperatura-destaque" id="now-temp">--°</span>
+              <span class="condicao-texto" id="now-cond">Carregando dados...</span>
+              <span id="now-icon" style="display:none;"></span>
+            </div>
+            <ul class="lista-detalhes-tempo">
+              <li>Sensação térmica: <strong id="now-feels">--°</strong></li>
+              <li>Temperatura mínima prevista: <strong id="now-min">--°</strong></li>
+              <li>Temperatura máxima prevista: <strong id="now-max">--°</strong></li>
+              <li>Vazão estimada na foz: <strong id="quick-river-val">-- m³/s</strong> (Situação: <span id="quick-river-status">Normal</span>)</li>
+              <li>Ondas no canal de acesso: <strong id="quick-wave-val">-- m</strong> (Situação: <span id="quick-wave-status">Calmo</span>)</li>
+            </ul>
           </div>
-          <div class="metric-value" id="val-rain">-- <span class="metric-unit">mm</span></div>
-          <div class="metric-footer" id="sub-rain">Probabilidade: --%</div>
         </div>
 
-        <!-- Vento -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">💨</span>
-            <span class="metric-title">Vento</span>
-          </div>
-          <div class="metric-value" id="val-wind">-- <span class="metric-unit">km/h</span></div>
-          <div class="metric-footer" id="sub-wind">Direção: -- · Rajadas: -- km/h</div>
+        <!-- Tabela de Indicadores Meteorológicos -->
+        <div class="bloco-secao">
+          <h2>2. Tabela de Indicadores Ambientais em Tempo Real</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th style="width: 30%;">Indicador</th>
+                <th style="width: 25%;">Valor Medido</th>
+                <th style="width: 45%;">Detalhamento / Referência</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Precipitação acumulada</td>
+                <td><strong id="val-rain">--</strong> mm</td>
+                <td id="sub-rain">Probabilidade de chuva: --%</td>
+              </tr>
+              <tr>
+                <td>Vento em superfície (10m)</td>
+                <td><strong id="val-wind">--</strong> km/h</td>
+                <td id="sub-wind">Direção e rajadas</td>
+              </tr>
+              <tr>
+                <td>Umidade relativa do ar</td>
+                <td><strong id="val-humidity">--</strong> %</td>
+                <td id="sub-humidity">Ponto de orvalho</td>
+              </tr>
+              <tr>
+                <td>Índice de radiação ultravioleta</td>
+                <td><strong id="val-uv">--</strong></td>
+                <td id="sub-uv">Nível de incidência</td>
+              </tr>
+              <tr>
+                <td>Pressão atmosférica</td>
+                <td><strong id="val-pressure">--</strong> hPa</td>
+                <td id="sub-pressure">Estabilidade barométrica</td>
+              </tr>
+              <tr>
+                <td>Vazão hidrológica (Rio Itajaí-Açu)</td>
+                <td><strong id="val-river">--</strong> m³/s</td>
+                <td id="sub-river">Foz / Estuário · Calha regular</td>
+              </tr>
+              <tr>
+                <td>Agitação marítima (Barra)</td>
+                <td><strong id="val-wave">--</strong> m</td>
+                <td id="sub-wave">Temperatura e período de vaga</td>
+              </tr>
+              <tr>
+                <td>Índice de qualidade do ar (EAQI)</td>
+                <td><strong id="val-aqi">--</strong> AQI</td>
+                <td id="sub-aqi">Concentração de material particulado</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- Umidade -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">💧</span>
-            <span class="metric-title">Umidade</span>
+        <!-- Tabela de Previsão 24 Horas -->
+        <div class="bloco-secao">
+          <h2>3. Previsão Horária para as Próximas 24 Horas</h2>
+          <div class="container-tabela-rolavel">
+            <table class="tabela-dados">
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Temperatura</th>
+                  <th>Condição de Tempo</th>
+                  <th>Probabilidade de Chuva</th>
+                </tr>
+              </thead>
+              <tbody id="hourly-strip">
+                <!-- Linhas preenchidas via JavaScript -->
+              </tbody>
+            </table>
           </div>
-          <div class="metric-value" id="val-humidity">-- <span class="metric-unit">%</span></div>
-          <div class="metric-footer" id="sub-humidity">Ponto de orvalho: --°</div>
         </div>
 
-        <!-- Radiação UV -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">☀️</span>
-            <span class="metric-title">Índice UV</span>
-          </div>
-          <div class="metric-value" id="val-uv">--</div>
-          <div class="metric-footer" id="sub-uv">Nível: --</div>
-        </div>
-
-        <!-- Rio Itajaí-Açu -->
-        <div class="metric-card card-highlight">
-          <div class="metric-header">
-            <span class="metric-icon">🏞️</span>
-            <span class="metric-title">Vazão do Rio</span>
-          </div>
-          <div class="metric-value" id="val-river">-- <span class="metric-unit">m³/s</span></div>
-          <div class="metric-footer" id="sub-river">Foz / Estuário · Calha Regular</div>
-        </div>
-
-        <!-- Mar & Ondas -->
-        <div class="metric-card card-highlight-blue">
-          <div class="metric-header">
-            <span class="metric-icon">🌊</span>
-            <span class="metric-title">Mar & Ondas</span>
-          </div>
-          <div class="metric-value" id="val-wave">-- <span class="metric-unit">m</span></div>
-          <div class="metric-footer" id="sub-wave">Água: --°C · Período: --s</div>
-        </div>
-
-        <!-- Qualidade do Ar -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">🍃</span>
-            <span class="metric-title">Qualidade do Ar</span>
-          </div>
-          <div class="metric-value" id="val-aqi">-- <span class="metric-unit">AQI</span></div>
-          <div class="metric-footer" id="sub-aqi">PM2.5: -- µg/m³ · Boa</div>
-        </div>
-
-        <!-- Pressão -->
-        <div class="metric-card">
-          <div class="metric-header">
-            <span class="metric-icon">🧭</span>
-            <span class="metric-title">Pressão</span>
-          </div>
-          <div class="metric-value" id="val-pressure">-- <span class="metric-unit">hPa</span></div>
-          <div class="metric-footer" id="sub-pressure">Estabilidade barométrica</div>
+        <!-- Tabela de Previsão Semanal (7 Dias) -->
+        <div class="bloco-secao">
+          <h2>4. Previsão Diária Estendida (7 Dias)</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Data / Dia</th>
+                <th>Condição Geral</th>
+                <th>Temp. Mínima</th>
+                <th>Temp. Máxima</th>
+                <th>Prob. Chuva</th>
+              </tr>
+            </thead>
+            <tbody id="daily-list">
+              <!-- Linhas preenchidas via JavaScript -->
+            </tbody>
+          </table>
         </div>
 
       </section>
 
-      <!-- PREVISÃO 7 DIAS (Compacta & Visual) -->
-      <section class="card card-daily">
-        <div class="card-title-row">
-          <h2 class="card-title">Previsão 7 Dias</h2>
-          <span class="card-caption">Mínimas e Máximas</span>
+      <!-- ===================================================================
+           MÓDULO 2: RADAR METEOROLÓGICO
+           =================================================================== -->
+      <section class="view-panel" id="view-radar">
+        <div class="bloco-secao">
+          <h2>Visualização Integrada de Radar Meteorológico e Satélite</h2>
+          <p class="texto-secao">
+            Imagem composta de radar meteorológico cobrindo a mesorregião do Vale do Itajaí e Litoral Norte Catarinense. 
+            Atualização em ciclo de 10 minutos com base nos radares meteorológicos estaduais e dados de satélite GOES-16.
+          </p>
+          <div class="quadro-radar">
+            <iframe 
+              id="radar-iframe"
+              src="https://www.rainviewer.com/map.html?loc=-26.9078,-48.6619,9&oFa=0&oC=1&oU=0&oCS=1&oF=0&oAP=1&c=1&o=83&lm=1&layer=radar&sm=1&sn=1" 
+              title="Radar Meteorológico RainViewer"
+              loading="lazy">
+            </iframe>
+          </div>
+          <p class="nota-tabela">Fonte da camada de radar: RainViewer API / Rede de Radares de Santa Catarina (Lontras e Chapecó).</p>
         </div>
-        <div class="daily-list" id="daily-list">
-          <!-- Filled by app.js -->
+      </section>
+
+      <!-- ===================================================================
+           MÓDULO 3: RIO ITAJAÍ-AÇU (HIDROLOGIA)
+           =================================================================== -->
+      <section class="view-panel" id="view-river">
+        <div class="bloco-secao">
+          <h2>1. Telemetria Hidrológica do Rio Itajaí-Açu</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Parâmetro</th>
+                <th>Valor Observado</th>
+                <th>Referência de Engenharia / Defesa Civil</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Vazão instantânea na foz</td>
+                <td><strong id="river-detail-now">--</strong> m³/s</td>
+                <td>Medição baseada no modelo GloFAS / Copernicus na foz de Itajaí</td>
+              </tr>
+              <tr>
+                <td>Vazão máxima prevista (72h)</td>
+                <td><strong id="river-detail-peak">--</strong> m³/s</td>
+                <td>Projeção hidrológica de curto prazo</td>
+              </tr>
+              <tr>
+                <td>Cota de atenção na régua municipal</td>
+                <td>3,00 m</td>
+                <td>Refluxo inicial nas bocas de lobo em períodos de maré alta</td>
+              </tr>
+              <tr>
+                <td>Cota de alerta na régua municipal</td>
+                <td>4,50 m</td>
+                <td>Início de alagamentos nos bairros Cordeiros, Murta e São Vicente</td>
+              </tr>
+              <tr>
+                <td>Cota de emergência na régua municipal</td>
+                <td>5,50 m</td>
+                <td>Extravasamento generalizado da calha principal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bloco-secao">
+          <h2>2. Cadastro Técnico das Barragens de Contenção de Cheias do Alto Vale</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Nome da Barragem</th>
+                <th>Município</th>
+                <th>Capacidade Total</th>
+                <th>Estrutura de Controle</th>
+                <th>Cota do Vertedouro</th>
+                <th>Operação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Barragem Oeste</td>
+                <td>Taió</td>
+                <td>83.000.000 m³</td>
+                <td>7 comportas de fundo</td>
+                <td>23,00 m</td>
+                <td>Operação normal</td>
+              </tr>
+              <tr>
+                <td>Barragem Sul</td>
+                <td>Ituporanga</td>
+                <td>93.000.000 m³</td>
+                <td>5 comportas de fundo</td>
+                <td>31,00 m</td>
+                <td>Operação normal</td>
+              </tr>
+              <tr>
+                <td>Barragem Norte</td>
+                <td>José Boiteux</td>
+                <td>357.000.000 m³</td>
+                <td>2 comportas de fundo</td>
+                <td>45,00 m</td>
+                <td>Operação normal</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="nota-tabela">Dados institucionais de referência: Defesa Civil do Estado de Santa Catarina (DCSC) e Epagri/Ciram.</p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           MÓDULO 4: MAR E NAVEGAÇÃO
+           =================================================================== -->
+      <section class="view-panel" id="view-marine">
+        <div class="bloco-secao">
+          <h2>1. Parâmetros Oceanográficos no Canal de Acesso aos Portos</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Variável Oceanográfica</th>
+                <th>Medição Atual</th>
+                <th>Observação Técnica</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Altura significativa das ondas (Hs)</td>
+                <td><strong id="marine-wave-h">--</strong> m</td>
+                <td id="marine-wave-desc">Agitação do mar na barra de entrada de Itajaí/Navegantes</td>
+              </tr>
+              <tr>
+                <td>Período de pico das ondas</td>
+                <td><strong id="marine-wave-p">--</strong> s</td>
+                <td>Intervalo entre cristas de onda consecutivas</td>
+              </tr>
+              <tr>
+                <td>Direção predominante da vaga</td>
+                <td><strong id="marine-wave-d">--</strong>°</td>
+                <td id="marine-wave-dir-text">Rumo em graus em relação ao Norte geográfico</td>
+              </tr>
+              <tr>
+                <td>Altura do swell (ondulação primária)</td>
+                <td><strong id="marine-swell-h">--</strong> m</td>
+                <td id="marine-swell-p">Ondas oceânicas de fundo geradas por frentes distantes</td>
+              </tr>
+              <tr>
+                <td>Temperatura da superfície do mar (TSM)</td>
+                <td><strong id="marine-sst">--</strong> °C</td>
+                <td>Monitoramento térmico costeiro da plataforma continental</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bloco-secao">
+          <h2>2. Tábua Teórica de Marés (Porto de Itajaí)</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Evento de Maré</th>
+                <th>Horário Previsto</th>
+                <th>Altura Relativa</th>
+                <th>Condição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Baixa-mar</td>
+                <td>05:40</td>
+                <td>0,30 m</td>
+                <td>Vazante finalizada</td>
+              </tr>
+              <tr>
+                <td>Preia-mar</td>
+                <td>12:00</td>
+                <td>1,10 m</td>
+                <td>Pico de maré alta</td>
+              </tr>
+              <tr>
+                <td>Baixa-mar</td>
+                <td>17:45</td>
+                <td>0,40 m</td>
+                <td>Vazante vespertina</td>
+              </tr>
+              <tr>
+                <td>Preia-mar</td>
+                <td>23:50</td>
+                <td>0,95 m</td>
+                <td>Preia-mar noturna</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="nota-tabela">Aviso: Tábua para fins puramente acadêmicos. Para manobras de atracação e navegação, consulte a Marinha do Brasil (DHN).</p>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           MÓDULO 5: QUALIDADE DO AR E UV
+           =================================================================== -->
+      <section class="view-panel" id="view-air">
+        <div class="bloco-secao">
+          <h2>1. Concentração de Poluentes Atmosféricos (CAMS / Copernicus)</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Poluente / Indicador</th>
+                <th>Concentração</th>
+                <th>Classificação / Padrão da OMS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Índice de Qualidade do Ar (EAQI)</td>
+                <td><strong id="air-aqi-num">--</strong> AQI</td>
+                <td id="air-aqi-status">Índice Geral</td>
+              </tr>
+              <tr>
+                <td>Material Particulado fino (PM2.5)</td>
+                <td><strong id="air-pm25">--</strong> µg/m³</td>
+                <td>Partículas inaláveis com diâmetro inferior a 2,5 micrômetros</td>
+              </tr>
+              <tr>
+                <td>Material Particulado grosso (PM10)</td>
+                <td><strong id="air-pm10">--</strong> µg/m³</td>
+                <td>Poeira em suspensão e aerossóis mecânicos</td>
+              </tr>
+              <tr>
+                <td>Dióxido de Nitrogênio (NO₂)</td>
+                <td><strong id="air-no2">--</strong> µg/m³</td>
+                <td>Emissões oriundas de motores a combustão e tráfego marítimo</td>
+              </tr>
+              <tr>
+                <td>Ozônio Troposférico (O₃)</td>
+                <td><strong id="air-o3">--</strong> µg/m³</td>
+                <td>Oxidante fotoquímico secundário</td>
+              </tr>
+              <tr>
+                <td>Dióxido de Enxofre (SO₂)</td>
+                <td><strong id="air-so2">--</strong> µg/m³</td>
+                <td>Derivados da queima de combustíveis fósseis industriais</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bloco-secao">
+          <h2>2. Radiação Solar e Índice Ultravioleta (UV)</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Parâmetro</th>
+                <th>Valor Atual</th>
+                <th>Orientação Técnica</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Índice UV máximo atual</td>
+                <td><strong id="air-uv-large">--</strong></td>
+                <td>
+                  <span id="air-uv-title" style="font-weight: bold;"></span> — 
+                  <span id="air-uv-desc">Aguardando dados de radiação solar...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           MÓDULO 6: LIMIARES OPERACIONAIS E ALERTAS
+           =================================================================== -->
+      <section class="view-panel" id="view-alerts">
+        <div class="bloco-secao">
+          <h2>1. Matriz de Monitoramento de Limiares Críticos</h2>
+          <table class="tabela-dados">
+            <thead>
+              <tr>
+                <th>Variável Hidrometeorológica</th>
+                <th>Leitura Atual</th>
+                <th>Limiar de Atenção</th>
+                <th>Limiar de Alerta</th>
+                <th>Situação do Sistema</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rajadas de Vento em Superfície</td>
+                <td id="alert-val-wind">-- km/h</td>
+                <td>Superior a 45 km/h</td>
+                <td>Superior a 65 km/h</td>
+                <td id="alert-status-wind">Normal</td>
+              </tr>
+              <tr>
+                <td>Precipitação Acumulada em 24h</td>
+                <td id="alert-val-rain">-- mm</td>
+                <td>Superior a 30 mm</td>
+                <td>Superior a 70 mm</td>
+                <td id="alert-status-rain">Normal</td>
+              </tr>
+              <tr>
+                <td>Altura de Ondas (Agitação Marítima)</td>
+                <td id="alert-val-wave">-- m</td>
+                <td>Superior a 2,0 m</td>
+                <td>Superior a 3,0 m</td>
+                <td id="alert-status-wave">Normal</td>
+              </tr>
+              <tr>
+                <td>Vazão Fluvial na Foz do Itajaí-Açu</td>
+                <td id="alert-val-river">-- m³/s</td>
+                <td>Superior a 1.500 m³/s</td>
+                <td>Superior a 2.500 m³/s</td>
+                <td id="alert-status-river">Normal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bloco-secao">
+          <h2>2. Links Institucionais e Fontes Oficiais de Monitoramento</h2>
+          <ul class="lista-links-institucionais">
+            <li><a href="https://alertas2.inmet.gov.br/" target="_blank" rel="noopener noreferrer">Instituto Nacional de Meteorologia (INMET) — Sistema de Alertas Meteorológicos</a></li>
+            <li><a href="https://www.defesacivil.sc.gov.br/" target="_blank" rel="noopener noreferrer">Defesa Civil do Estado de Santa Catarina (DCSC) — Avisos e Boletins Oficiais</a></li>
+            <li><a href="https://ceops.furb.br/" target="_blank" rel="noopener noreferrer">Centro de Operação do Sistema de Alerta da Bacia Hidrográfica do Rio Itajaí (CEOPS / FURB)</a></li>
+            <li><a href="https://www.marinha.mil.br/chm/tabuas-de-mare" target="_blank" rel="noopener noreferrer">Marinha do Brasil — Centro de Hidrografia da Marinha (CHM) / Tábuas de Marés</a></li>
+          </ul>
         </div>
       </section>
 
     </main>
 
-    <!-- Lean Native Footer -->
-    <footer class="app-footer">
-      <div class="footer-inner">
-        <span>Modelos: ECMWF · GFS · GloFAS</span>
-        <span class="footer-sep">·</span>
-        <span id="footer-update">Sincronizado automaticamente</span>
-      </div>
+    <!-- Rodapé Acadêmico -->
+    <footer class="rodape-academico">
+      <hr class="linha-divisoria">
+      <p>
+        <strong>Fontes de dados técnicos:</strong> Open-Meteo Weather API, GloFAS / Copernicus Emergency Management Service, Copernicus Atmosphere Monitoring Service (CAMS), INMET e Defesa Civil de SC.
+      </p>
+      <p>
+        <strong>Desenvolvido por:</strong> Acadêmicos do Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas (TADS) · IFSC Câmpus Itajaí.
+      </p>
+      <p>
+        Projeto acadêmico para fins de estudo e integração de dados públicos — Disciplina de Desenvolvimento de Aplicações Web, 2026.
+      </p>
+      <!-- Hidden element to preserve theme toggle handler if needed without rendering -->
+      <button type="button" id="btn-theme" style="display:none;" aria-hidden="true"></button>
+      <span id="footer-update" style="display:none;"></span>
     </footer>
 
   </div>
